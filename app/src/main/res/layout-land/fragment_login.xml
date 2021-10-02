@@ -33,7 +33,6 @@
                 android:text="@string/usernameLabel"
                 android:textSize="20sp"/>
             <EditText
-                android:id="@+id/usernameEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 tools:text="username"
@@ -45,7 +44,6 @@
                 android:textSize="20sp"
                 android:text="@string/passwordLabel"/>
             <EditText
-                android:id="@+id/passwordEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPassword"

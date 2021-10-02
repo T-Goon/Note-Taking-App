@@ -2,18 +2,30 @@ package com.timothygoon.note_taking_app
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.timothygoon.note_taking_app.ui.main.MainFragment
+import android.util.Log
 
-class MainActivity : AppCompatActivity() {
+private const val TAG: String = "MainActivity";
+
+class MainActivity : AppCompatActivity(), LoginFragment.Callbacks {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.main_activity)
+        Log.d(TAG, "onCreate() called")
+        setContentView(R.layout.activity_main)
 
         if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                    .replace(R.id.container, MainFragment.newInstance())
-                    .commitNow()
+            supportFragmentManager
+                .beginTransaction()
+                    .add(R.id.container, LoginFragment.newInstance())
+                    .commit()
         }
+    }
+
+    override fun onLogin() {
+//        val fragment = NoteListFragment()
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.container, NoteListFragment.newInstance())
+            .addToBackStack(null)
+            .commit()
     }
 }
