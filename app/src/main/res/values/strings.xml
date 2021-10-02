@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">Note-Taking-App</string>
+
+    <string name="noteBodyLabel">Note Body:</string>
+    <string name="addImageDesc">Add image to note</string>
+    <string name="addLocationLabel">Add Location Button</string>
+    <string name="saveBtnText">Save</string>
+    <string name="noteImageDesc">Note Image</string>
+    <string name="loginTitle">Login</string>
+    <string name="usernameLabel">Username:</string>
+    <string name="passwordLabel">Password:</string>
+    <string name="saveToServerBtn">Save to Server</string>
+    <string name="loadFromServerBtn">Load from Server</string>
 </resources>
