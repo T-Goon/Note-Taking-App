@@ -4,15 +4,24 @@ import androidx.lifecycle.ViewModel
 
 class NoteListViewModel: ViewModel() {
 
-    val notes = mutableListOf<Note>()
+//    val notes = mutableListOf<Note>()
 
-    init{
-        for(i in 0 until 10){
-            val note = Note()
-            note.title = "Note #$i"
-            note.noteBody = "lorem ipsum"
-            notes += note
-        }
+//    init{
+//        for(i in 0 until 10){
+//            val note = Note()
+//            note.title = "Note #$i"
+//            note.noteBody = "lorem ipsum"
+//            notes += note
+//        }
+//    }
+
+    private val noteRepository = NoteRepository.get()
+
+    fun addNote(note: Note){
+        noteRepository.addNote(note)
     }
+
+    val noteListLiveData = noteRepository.getNotes()
+
 
 }

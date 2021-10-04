@@ -1,8 +1,11 @@
 package com.timothygoon.note_taking_app
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import java.util.*
 
-data class Note(var id: UUID = UUID.randomUUID(),
+@Entity
+data class Note(@PrimaryKey var id: UUID = UUID.randomUUID(),
                 var title: String = "",
                 var noteBody: String = "",
                 var location: String = ""

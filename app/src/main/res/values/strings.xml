@@ -11,4 +11,5 @@
     <string name="passwordLabel">Password:</string>
     <string name="saveToServerBtn">Save to Server</string>
     <string name="loadFromServerBtn">Load from Server</string>
+    <string name="addNoteBtn">Add Note</string>
 </resources>

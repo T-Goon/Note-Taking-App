@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.Observer
 import java.util.*
 
 private const val TAG = "NoteDetailFragment"
@@ -35,6 +36,8 @@ class NoteDetailFragment: Fragment() {
         super.onCreate(savedInstanceState)
         note = Note()
         val noteId: UUID = arguments?.getSerializable(ARG_NOTE_ID) as UUID
+        noteDetailViewModel.loadNote(noteId)
+
     }
 
     override fun onCreateView(
@@ -56,8 +59,35 @@ class NoteDetailFragment: Fragment() {
         bodyEditText.setText(noteDetailViewModel.noteBody)
         locationTextView.setText(noteDetailViewModel.noteLocation)
 
-
         return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        noteDetailViewModel.noteLiveData.observe(
+            viewLifecycleOwner,
+            Observer { note ->
+                note?.let {
+                    this.note = note
+
+                    noteDetailViewModel.id = note.id
+                    noteDetailViewModel.noteTitle = note.title
+                    noteDetailViewModel.noteBody = note.noteBody
+                    noteDetailViewModel.noteLocation = note.location
+
+                    // TODO: Add the same sync functionality for image
+
+
+                    updateUI()
+                }
+            })
+
+        saveButton.setOnClickListener { view: View ->
+//            note.title = noteDetailViewModel.noteTitle
+//            note.noteBody = noteDetailViewModel.noteBody
+//            note.location = noteDetailViewModel.noteLocation
+            noteDetailViewModel.saveNote(note)
+        }
     }
 
     override fun onStart() {
@@ -81,6 +111,7 @@ class NoteDetailFragment: Fragment() {
                 count: Int
             ) {
                 noteDetailViewModel.noteTitle = titleEditText.text.toString()
+                note.title = titleEditText.text.toString()
             }
 
             override fun afterTextChanged(sequence: Editable?) {
@@ -106,7 +137,8 @@ class NoteDetailFragment: Fragment() {
                 before: Int,
                 count: Int
             ) {
-                noteDetailViewModel.noteBody = titleEditText.text.toString()
+                noteDetailViewModel.noteBody = bodyEditText.text.toString()
+                note.noteBody = bodyEditText.text.toString()
             }
 
             override fun afterTextChanged(sequence: Editable?) {
@@ -117,6 +149,15 @@ class NoteDetailFragment: Fragment() {
 
 
     }
+
+    private fun updateUI() {
+        titleEditText.setText(note.title)
+        bodyEditText.setText(note.noteBody)
+        locationTextView.setText(note.location)
+
+        // TODO: Set up Image loading / saving
+    }
+
 
     companion object{
         fun newInstance(noteId: UUID): NoteDetailFragment {
