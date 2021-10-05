@@ -26,7 +26,6 @@ class MainActivity : AppCompatActivity(), LoginFragment.Callbacks, NoteListFragm
 //        val fragment = NoteListFragment()
         supportFragmentManager.beginTransaction()
             .replace(R.id.container, NoteListFragment.newInstance())
-            .addToBackStack(null)
             .commit()
     }
 

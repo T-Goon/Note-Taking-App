@@ -14,6 +14,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import java.io.ObjectInputStream
+import java.io.ObjectOutputStream
 
 
 private const val TAG: String = "LoginFragment";
@@ -43,6 +45,23 @@ class LoginFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG, "onCreate() called")
         super.onCreate(savedInstanceState)
+
+        try{
+            val fis = requireActivity().openFileInput("loginToken")
+            val ois = ObjectInputStream(fis)
+
+            val token = ois.readObject() as String
+
+            if(token.isNotEmpty()) {
+                callbacks?.onLogin()
+            }
+
+            ois.close()
+            fis.close()
+        } catch(err: Throwable){
+
+        }
+
     }
 
     override fun onCreateView(
@@ -62,8 +81,6 @@ class LoginFragment : Fragment() {
         userNameEditText.setText(loginViewModel.userName)
         passwordEditText.setText(loginViewModel.password)
 
-
-
         return view
     }
 
@@ -71,23 +88,29 @@ class LoginFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         loginButton.setOnClickListener { view: View ->
-            val authenticated = false
-
             val mongoDBLiveData: LiveData<String> = MongoDBFetchr().checkUserCredentials(loginViewModel.userName, loginViewModel.password)
             mongoDBLiveData.observe(
                 viewLifecycleOwner,
                 Observer { responseString ->
-//                    Log.d(TAG, "Response received: $responseString")
-                    
+                    // Store the object in a file
+                    try{
+                        val fos = requireActivity().openFileOutput(
+                            "loginToken",
+                            Context.MODE_PRIVATE
+                        )
+                        val oos = ObjectOutputStream(fos)
+
+                        oos.writeObject(responseString)
+
+                        oos.close()
+                        fos.close()
+
+                        callbacks?.onLogin()
+                    } catch(err: Throwable){
+                        Log.e(TAG, err.toString())
+                    }
+
                 })
-
-
-
-
-            if(authenticated){
-                callbacks?.onLogin()
-            }
-
         }
     }
 
