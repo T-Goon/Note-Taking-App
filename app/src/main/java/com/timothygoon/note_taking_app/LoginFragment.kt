@@ -77,7 +77,8 @@ class LoginFragment : Fragment() {
             mongoDBLiveData.observe(
                 viewLifecycleOwner,
                 Observer { responseString ->
-                    Log.d(TAG, "Response received: $responseString")
+//                    Log.d(TAG, "Response received: $responseString")
+                    
                 })
 
 
