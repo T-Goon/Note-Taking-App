@@ -1,13 +1,21 @@
 package com.timothygoon.note_taking_app
 
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
+import android.location.*
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.Observer
 import java.util.*
@@ -15,7 +23,7 @@ import java.util.*
 private const val TAG = "NoteDetailFragment"
 private const val ARG_NOTE_ID = "note_id"
 
-class NoteDetailFragment: Fragment() {
+class NoteDetailFragment: Fragment(), LocationListener {
 
     private lateinit var note: Note
 
@@ -28,6 +36,11 @@ class NoteDetailFragment: Fragment() {
     private lateinit var cameraImageButton: ImageButton
     private lateinit var locationTextView: TextView
 
+    private val locationPermissionCode = 2
+    private var lat : Double = 0.0
+    private var lon : Double = 0.0
+    private var locality: String = ""
+
     private val noteDetailViewModel: NoteDetailViewModel by lazy {
         ViewModelProvider(this).get(NoteDetailViewModel::class.java)
     }
@@ -37,6 +50,13 @@ class NoteDetailFragment: Fragment() {
         note = Note()
         val noteId: UUID = arguments?.getSerializable(ARG_NOTE_ID) as UUID
         noteDetailViewModel.loadNote(noteId)
+
+        val locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
+        if ((ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
+            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), locationPermissionCode)
+        }
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5f, this)
 
     }
 
@@ -82,11 +102,16 @@ class NoteDetailFragment: Fragment() {
                 }
             })
 
+
+
         saveButton.setOnClickListener { view: View ->
-//            note.title = noteDetailViewModel.noteTitle
-//            note.noteBody = noteDetailViewModel.noteBody
-//            note.location = noteDetailViewModel.noteLocation
             noteDetailViewModel.saveNote(note)
+        }
+
+        GPSImageButton.setOnClickListener { view: View ->
+            noteDetailViewModel.noteLocation = locality
+            note.location = noteDetailViewModel.noteLocation
+            locationTextView.setText(noteDetailViewModel.noteLocation)
         }
     }
 
@@ -156,6 +181,22 @@ class NoteDetailFragment: Fragment() {
         locationTextView.setText(note.location)
 
         // TODO: Set up Image loading / saving
+    }
+
+    override fun onLocationChanged(location: Location) {
+        Log.d(TAG, "onLocationChanged() called")
+        lat = location.latitude
+        lon = location.longitude
+
+        val gcd = Geocoder(requireContext(), Locale.getDefault())
+        val addresses:List<Address> = gcd.getFromLocation(lat, lon, 1)
+
+        if (addresses.size > 0){
+            locality = addresses.get(0).getAddressLine(0)
+        }
+
+//        Log.d(TAG, "locality: " + addresses.get(0).getAddressLine(0))
+
     }
 
 
