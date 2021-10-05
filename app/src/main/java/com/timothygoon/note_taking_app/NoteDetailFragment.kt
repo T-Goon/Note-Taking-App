@@ -41,23 +41,46 @@ class NoteDetailFragment: Fragment(), LocationListener {
     private var lon : Double = 0.0
     private var locality: String = ""
 
+    var locationManager : LocationManager? = null
+
     private val noteDetailViewModel: NoteDetailViewModel by lazy {
         ViewModelProvider(this).get(NoteDetailViewModel::class.java)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d(TAG, "onCreate() called")
         super.onCreate(savedInstanceState)
         note = Note()
         val noteId: UUID = arguments?.getSerializable(ARG_NOTE_ID) as UUID
         noteDetailViewModel.loadNote(noteId)
 
-        val locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
-        if ((ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
-            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), locationPermissionCode)
+
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        Log.d(TAG, "onRequestPermissionResult() called")
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == locationPermissionCode) {
+
+            // Checking whether user granted the permission or not.
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                if ((ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
+                    locationManager!!.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5f, this)
+                }
+            }
         }
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5f, this)
 
+        Log.d(TAG, "permission granted")
+        Log.d(TAG, permissions.toString())
+        Log.d(TAG, grantResults.toString())
     }
 
     override fun onCreateView(
@@ -109,6 +132,17 @@ class NoteDetailFragment: Fragment(), LocationListener {
         }
 
         GPSImageButton.setOnClickListener { view: View ->
+
+            noteDetailViewModel.isLocationBtnPressed = true
+
+            if ((ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
+                Log.d(TAG, "Requesting permission to use location services")
+                requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), locationPermissionCode)
+            }
+            else{
+                locationManager!!.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5f, this)
+            }
+
             noteDetailViewModel.noteLocation = locality
             note.location = noteDetailViewModel.noteLocation
             locationTextView.setText(noteDetailViewModel.noteLocation)
@@ -193,6 +227,15 @@ class NoteDetailFragment: Fragment(), LocationListener {
 
         if (addresses.size > 0){
             locality = addresses.get(0).getAddressLine(0)
+        }
+
+        // check if the location button is pressed before
+        if(noteDetailViewModel.isLocationBtnPressed){
+            noteDetailViewModel.noteLocation = locality
+            note.location = noteDetailViewModel.noteLocation
+            locationTextView.setText(noteDetailViewModel.noteLocation)
+
+            noteDetailViewModel.isLocationBtnPressed = false
         }
 
 //        Log.d(TAG, "locality: " + addresses.get(0).getAddressLine(0))

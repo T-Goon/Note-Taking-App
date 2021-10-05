@@ -13,6 +13,8 @@ class NoteDetailViewModel: ViewModel() {
     var noteBody = ""
     var noteLocation = ""
 
+    var isLocationBtnPressed = false
+
     // TODO: Add a property for capturing image information
 
     private val noteRepository = NoteRepository.get()

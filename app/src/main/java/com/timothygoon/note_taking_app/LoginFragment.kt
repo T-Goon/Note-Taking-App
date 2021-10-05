@@ -11,6 +11,8 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 
 
@@ -60,12 +62,32 @@ class LoginFragment : Fragment() {
         userNameEditText.setText(loginViewModel.userName)
         passwordEditText.setText(loginViewModel.password)
 
-        //TODO: Add listener for starting recylerview
-        loginButton.setOnClickListener { view: View ->
-            callbacks?.onLogin()
-        }
+
 
         return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        loginButton.setOnClickListener { view: View ->
+            val authenticated = false
+
+            val mongoDBLiveData: LiveData<String> = MongoDBFetchr().checkUserCredentials(loginViewModel.userName, loginViewModel.password)
+            mongoDBLiveData.observe(
+                viewLifecycleOwner,
+                Observer { responseString ->
+                    Log.d(TAG, "Response received: $responseString")
+                })
+
+
+
+
+            if(authenticated){
+                callbacks?.onLogin()
+            }
+
+        }
     }
 
     override fun onStart() {
