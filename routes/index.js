@@ -31,6 +31,7 @@ router.post('/login', async (req, res, next) => {
     } else {
       res.json({ error: 'Password does not match' });
     }
+    console.log("Login errors")
     return;
 
   } else {
@@ -42,6 +43,7 @@ router.post('/login', async (req, res, next) => {
     });
 
     newUser = await newUser.save();
+    console.log("Login Success");
     res.json({ token: generateToken({ id: newUser._id, username: newUser.username }) });
   }
 });
