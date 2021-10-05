@@ -18,6 +18,8 @@ function generateToken(user) {
 router.post('/login', async (req, res, next) => {
   const { username, password } = req.body;
 
+  console.log("Login input", username, password);
+
   const user = await User.findOne({ username });
 
   if (user) {
