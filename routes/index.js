@@ -26,12 +26,12 @@ router.post('/login', async (req, res, next) => {
     const match = await bcrypt.compare(password, user.passwordHash);
 
     if (match) {
+      console.log("User Logged in")
       res.json({ token: generateToken({ id: user._id, username: user.username }) });
-
     } else {
+      console.log("Password not matching")
       res.json({ error: 'Password does not match' });
     }
-    console.log("Login errors")
     return;
 
   } else {
