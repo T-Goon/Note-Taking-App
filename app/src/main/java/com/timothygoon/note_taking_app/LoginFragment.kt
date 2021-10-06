@@ -50,9 +50,9 @@ class LoginFragment : Fragment() {
             val fis = requireActivity().openFileInput("loginToken")
             val ois = ObjectInputStream(fis)
 
-            val token = ois.readObject() as String
+            val userTokenData = ois.readObject() as UserTokenData
 
-            if(token.isNotEmpty()) {
+            if(userTokenData.token.isNotEmpty()) {
                 callbacks?.onLogin()
             }
 
@@ -100,7 +100,9 @@ class LoginFragment : Fragment() {
                         )
                         val oos = ObjectOutputStream(fos)
 
-                        oos.writeObject(responseString)
+                        val userTokenData = UserTokenData(loginViewModel.userName, responseString)
+
+                        oos.writeObject(userTokenData)
 
                         oos.close()
                         fos.close()

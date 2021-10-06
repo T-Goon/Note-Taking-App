@@ -5,7 +5,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.timothygoon.note_taking_app.api.LoginRequest
 import com.timothygoon.note_taking_app.api.MongoDBApi
-import com.timothygoon.note_taking_app.database.TokenResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -38,11 +37,59 @@ class MongoDBFetchr {
             }
             override fun onResponse(call: Call<TokenResponse>, response: Response<TokenResponse>) {
                 Log.d(TAG, "Response Received")
-                val response : String? = response.body()?.token
-                responseLiveData.value = response
+                val loginResponse : String? = response.body()?.token
+                responseLiveData.value = loginResponse
             }
 
         })
+
+        return responseLiveData
+    }
+
+    fun saveToServer(userTokenData: UserTokenData, notes: List<Note>): LiveData<String>{
+        val responseLiveData: MutableLiveData<String> = MutableLiveData()
+
+        val sendNotesRequestBody = SendNotesRequest(userTokenData.username, notes, userTokenData.token)
+
+        val sendNotesRequest: Call<SaveResponse> = mongoDBApi.saveToServer(sendNotesRequestBody)
+
+        sendNotesRequest.enqueue(object: Callback<SaveResponse>{
+            override fun onResponse(call: Call<SaveResponse>, response: Response<SaveResponse>) {
+                Log.d(TAG, "Data Saved!")
+                val saveToServerResponse : String? = response.body()?.success.toString()
+                responseLiveData.value = saveToServerResponse
+
+            }
+
+            override fun onFailure(call: Call<SaveResponse>, t: Throwable) {
+                Log.e(TAG, "Failed to Save data")
+            }
+
+        }
+        )
+
+        return responseLiveData
+    }
+
+    fun loadFromServer(token: String): LiveData<List<LoadNote>>{
+        val responseLiveData: MutableLiveData<List<LoadNote>> = MutableLiveData()
+
+        val loadNotesRequestBody = LoadNotesRequest(token)
+
+        val loadNotesRequest: Call<List<LoadNote>> = mongoDBApi.loadFromServer(loadNotesRequestBody)
+
+        loadNotesRequest.enqueue(object: Callback<List<LoadNote>>{
+            override fun onResponse(call: Call<List<LoadNote>>, response: Response<List<LoadNote>>) {
+                Log.d(TAG, "Data Loaded!")
+                val saveToServerResponse : List<LoadNote>? = response.body()
+                responseLiveData.value = saveToServerResponse
+            }
+            override fun onFailure(call: Call<List<LoadNote>>, t: Throwable) {
+                Log.e(TAG, "Failed to Load data")
+            }
+
+        }
+        )
 
         return responseLiveData
     }

@@ -23,5 +23,7 @@ interface NoteDao {
     @Insert
     fun addNote(note: Note)
 
+    @Query("DELETE FROM note")
+    fun deleteNotes()
 
 }

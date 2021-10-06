@@ -8,11 +8,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import java.io.ObjectInputStream
+import java.io.ObjectOutputStream
 import java.util.*
 
 private const val TAG: String = "NoteListFragment";
@@ -69,6 +73,7 @@ class NoteListFragment: Fragment() {
         noteListViewModel.noteListLiveData.observe(
             viewLifecycleOwner,
             Observer { notes ->
+                noteListViewModel.notes = notes
                 notes?.let{
                     Log.i(TAG, "Got notes ${notes.size}")
                     updateUI(notes)
@@ -76,12 +81,73 @@ class NoteListFragment: Fragment() {
             }
         )
 
-        // TODO: Set up listener for Add button
         addNoteButton.setOnClickListener { view: View ->
             val newNote = Note()
             newNote.title = "New Note"
             newNote.noteBody = "..."
             noteListViewModel.addNote(newNote)
+        }
+
+        saveToServerButton.setOnClickListener { view: View ->
+            var userTokenData : UserTokenData? = null
+            try{
+                val fis = requireActivity().openFileInput("loginToken")
+                val ois = ObjectInputStream(fis)
+
+                userTokenData = ois.readObject() as UserTokenData
+
+                ois.close()
+                fis.close()
+            } catch(err: Throwable){
+                Log.e(TAG, err.toString())
+            }
+
+            val mongoDBLiveData: LiveData<String> = MongoDBFetchr().saveToServer(userTokenData!!, noteListViewModel.notes )
+            mongoDBLiveData.observe(
+                viewLifecycleOwner,
+                Observer { responseString ->
+
+                    Log.d(TAG, "Received response is "+responseString)
+
+                    Toast.makeText(requireContext(), "Data is saved to the server!", Toast.LENGTH_LONG).show()
+
+                })
+        }
+
+        loadFromServerButton.setOnClickListener { view: View ->
+            var userTokenData : UserTokenData? = null
+            try{
+                val fis = requireActivity().openFileInput("loginToken")
+                val ois = ObjectInputStream(fis)
+
+                userTokenData = ois.readObject() as UserTokenData
+
+                ois.close()
+                fis.close()
+            } catch(err: Throwable){
+                Log.e(TAG, err.toString())
+            }
+
+            val mongoDBLiveData: LiveData<List<LoadNote>> = MongoDBFetchr().loadFromServer(userTokenData!!.token)
+
+            mongoDBLiveData.observe(
+                viewLifecycleOwner,
+                Observer { response ->
+
+                    Log.d(TAG, "Received response is "+response.toString())
+
+                    noteListViewModel.deleteNotes()
+
+                    for( note in response){
+                        val newNote = Note(UUID.fromString(note.appId), note.title, note.body, note.location)
+                        // TODO: Handle the image information later
+                        noteListViewModel.addNote(newNote)
+                    }
+
+                    Toast.makeText(requireContext(), "Data is loaded from the server!", Toast.LENGTH_LONG).show()
+                })
+
+
         }
     }
 

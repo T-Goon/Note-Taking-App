@@ -1,6 +1,7 @@
 package com.timothygoon.note_taking_app
 
 import androidx.lifecycle.ViewModel
+import java.util.ArrayList
 
 class NoteListViewModel: ViewModel() {
 
@@ -21,7 +22,12 @@ class NoteListViewModel: ViewModel() {
         noteRepository.addNote(note)
     }
 
+    fun deleteNotes(){
+        noteRepository.deleteNotes()
+    }
+
     val noteListLiveData = noteRepository.getNotes()
 
+    var notes : List<Note> = ArrayList<Note>()
 
 }

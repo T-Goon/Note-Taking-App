@@ -23,6 +23,12 @@ class NoteRepository private constructor(context: Context) {
     fun getNotes(): LiveData<List<Note>> = noteDao.getNotes()
     fun getNote(id: UUID): LiveData<Note?> = noteDao.getNote(id)
 
+    fun deleteNotes(){
+        executor.execute{
+            noteDao.deleteNotes()
+        }
+    }
+
     fun updateNote(note: Note){
         executor.execute {
             noteDao.updateNote(note)
