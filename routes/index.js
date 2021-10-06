@@ -111,12 +111,12 @@ router.post('/save', async function (req, res, next) {
 
   });
 
-  console.log("Save success", username, token, notes);
+  console.log("Save success", username, token);
   res.json({ success: true });
 });
 
 // Send notes to the client
-router.get('/load', async function (req, res, next) {
+router.post('/load', async function (req, res, next) {
   const { token } = req.body;
 
   let user;
@@ -125,10 +125,12 @@ router.get('/load', async function (req, res, next) {
       user = jwt.verify(token, process.env.JWT_SECRET);
 
     } catch {
+      console.log("Token is invalid: ", token);
       res.json({ error: "Token is invalid" });
       return;
     }
   } else {
+    console.log("No token: ", token);
     res.json({ error: "No token" });
     return;
   }
@@ -148,6 +150,7 @@ router.get('/load', async function (req, res, next) {
     });
   }
 
+  console.log("Load success", token, resNotes);
   res.json(resNotes);
 });
 
