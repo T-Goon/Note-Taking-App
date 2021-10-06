@@ -57,10 +57,12 @@ router.post('/save', async function (req, res, next) {
       jwt.verify(token, process.env.JWT_SECRET);
 
     } catch {
+      console.log("Token is invalid: ", token);
       res.json({ error: "Token is invalid" });
       return;
     }
   } else {
+    console.log("No token: ", token);
     res.json({ error: "No token" });
     return;
   }
@@ -109,6 +111,7 @@ router.post('/save', async function (req, res, next) {
 
   });
 
+  console.log("Save success", username, token, notes);
   res.json({ success: true });
 });
 
