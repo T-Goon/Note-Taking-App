@@ -145,7 +145,7 @@ router.post('/load', async function (req, res, next) {
       appId: notesFromDB[i].appId,
       title: notesFromDB[i].title,
       body: notesFromDB[i].body,
-      image: image.image,
+      image: image ? image.image : null,
       location: notesFromDB[i].location
     });
   }
