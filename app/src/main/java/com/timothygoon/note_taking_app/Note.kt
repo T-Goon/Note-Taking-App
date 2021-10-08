@@ -9,7 +9,7 @@ import java.util.*
 data class Note(@PrimaryKey @SerializedName("appId") var id: UUID = UUID.randomUUID(),
                 var title: String = "",
                 @SerializedName("body") var noteBody: String = "",
-                var location: String = ""
+                var location: String = "", var image: String = ""
 ){
     val notePhoto
         get() = "NOTE_IMG_$id.jpg"

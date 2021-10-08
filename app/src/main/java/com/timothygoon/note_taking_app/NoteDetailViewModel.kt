@@ -1,9 +1,11 @@
 package com.timothygoon.note_taking_app
 
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
+import java.io.File
 import java.util.*
 
 class NoteDetailViewModel: ViewModel() {
@@ -12,6 +14,8 @@ class NoteDetailViewModel: ViewModel() {
     var noteTitle = ""
     var noteBody = ""
     var noteLocation = ""
+    var photoFile: File? = null
+    var photoUri: Uri? = null
 
     var isLocationBtnPressed = false
 
@@ -31,5 +35,8 @@ class NoteDetailViewModel: ViewModel() {
         noteRepository.updateNote(note)
     }
 
+    fun getPhotoFile(note: Note): File {
+        return noteRepository.getPhotoFile(note)
+    }
 
 }

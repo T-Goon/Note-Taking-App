@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.room.Room
 import com.timothygoon.note_taking_app.database.NoteDatabase
+import java.io.File
 import java.util.*
 import java.util.concurrent.Executors
 
@@ -20,8 +21,12 @@ class NoteRepository private constructor(context: Context) {
     private val noteDao = database.noteDao()
     private val executor = Executors.newSingleThreadExecutor()
 
+    private val filesDir = context.applicationContext.filesDir
+
     fun getNotes(): LiveData<List<Note>> = noteDao.getNotes()
     fun getNote(id: UUID): LiveData<Note?> = noteDao.getNote(id)
+
+    fun getPhotoFile(note: Note): File = File(filesDir, note.notePhoto)
 
     fun deleteNotes(){
         executor.execute{

@@ -1,6 +1,7 @@
 package com.timothygoon.note_taking_app
 
 import androidx.lifecycle.ViewModel
+import java.io.File
 import java.util.ArrayList
 
 class NoteListViewModel: ViewModel() {
@@ -27,6 +28,10 @@ class NoteListViewModel: ViewModel() {
     }
 
     val noteListLiveData = noteRepository.getNotes()
+
+    fun getPhotoFile(note: Note) : File {
+        return noteRepository.getPhotoFile(note)
+    }
 
     var notes : List<Note> = ArrayList<Note>()
 

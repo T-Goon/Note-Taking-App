@@ -15,9 +15,13 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import java.io.ObjectInputStream
-import java.io.ObjectOutputStream
+import android.graphics.Bitmap
+
+import android.graphics.BitmapFactory
+import android.util.Base64;
+import java.io.*
 import java.util.*
+
 
 private const val TAG: String = "NoteListFragment";
 class NoteListFragment: Fragment() {
@@ -73,7 +77,27 @@ class NoteListFragment: Fragment() {
         noteListViewModel.noteListLiveData.observe(
             viewLifecycleOwner,
             Observer { notes ->
+                val baos = ByteArrayOutputStream()
+
+                for(note in notes) {
+                    val imageFile = noteListViewModel.getPhotoFile(note)
+                    var bitmap : Bitmap? = null
+
+                    if (imageFile.exists() == true) {
+                        bitmap = BitmapFactory.decodeFile(imageFile.path)
+                    }
+
+                    if (bitmap != null) {
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+                        val imageBytes: ByteArray = baos.toByteArray()
+                        val imageString: String = Base64.encodeToString(imageBytes, Base64.DEFAULT)
+
+                        note.image= imageString
+                    }
+                }
+
                 noteListViewModel.notes = notes
+
                 notes?.let{
                     Log.i(TAG, "Got notes ${notes.size}")
                     updateUI(notes)
@@ -140,7 +164,27 @@ class NoteListFragment: Fragment() {
 
                     for( note in response){
                         val newNote = Note(UUID.fromString(note.appId), note.title, note.body, note.location)
-                        // TODO: Handle the image information later
+
+                        // Decode image and save to jpeg file
+                        if(note.image != null){
+                            val imageBytes : ByteArray = Base64.decode(note.image, Base64.DEFAULT)
+                            val decodedImage : Bitmap =
+                                BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+
+                            try{
+                                val fos = requireActivity().openFileOutput(
+                                    "NOTE_IMG_${note.appId}.jpg",
+                                    Context.MODE_PRIVATE
+                                )
+                                decodedImage.compress(Bitmap.CompressFormat.JPEG, 100, fos)
+
+                                fos.close()
+
+                            } catch(err: Throwable){
+                                Log.e(TAG, err.toString())
+                            }
+                        }
+
                         noteListViewModel.addNote(newNote)
                     }
 
