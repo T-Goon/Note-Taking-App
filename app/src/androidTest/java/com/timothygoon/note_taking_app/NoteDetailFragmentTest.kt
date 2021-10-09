@@ -87,8 +87,6 @@ class NoteDetailFragmentTest {
             )
         )
 
-        Espresso.onView(ViewMatchers.withId(R.id.saveButton)).perform(ViewActions.click())
-
         // Go back to notes list fragment
         Espresso.pressBack()
 
