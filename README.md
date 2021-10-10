@@ -1,7 +1,7 @@
 # CS-4518-Mobile-and-Ubiquitous-Computing
 # Note-Taking-App
 
-It is an Android based application that will allow its users to create their account, take notes on the go, and add location and pictorial information to it. The data will be stored in two different areas for peristence: Local Sqlite3 DB and MongoDB (For longer persistence). It also allows the users to utilize the “list-detail” methodology to capture the notes and label them under different titles. This allows for better organization of information as well as easier retrievability. 
+It is an Android based application that will allow its users to create their account, take notes on the go, and add location and pictorial information to it. The App makes uses of the Model-View-Controller (MVC) architecture. The data will be stored in two different areas for peristence: Local Sqlite3 DB and MongoDB (For longer persistence). It also allows the users to utilize the “list-detail” methodology to capture the notes and label them under different titles. This allows for better organization of information as well as easier retrievability. 
  
 ## Features
 
@@ -22,6 +22,10 @@ The Note-Taking-App allows the user to add a new note, view and edit their organ
 Apart from being a traditional note-taker, the Note-Taking-App allows the user to add location as well as pictorial information to their notes.
 
 ![3](https://user-images.githubusercontent.com/47456525/136677885-fc9b8bf2-9034-457b-a6fd-c729412030ef.png)
+
+## Testing for the Note-Taking-App
+
+For testing the correctness and expected behaviour of our app, we performed UI tests using the Espresso Library in Android. 
 
 ## Resource Utilization
 
