@@ -27,6 +27,9 @@ Apart from being a traditional note-taker, the Note-Taking-App allows the user t
 
 For testing the correctness and expected behaviour of our app, we performed UI tests using the Espresso Library in Android. 
 
+![image](https://user-images.githubusercontent.com/32044950/136706532-1e6b1d3c-7a39-4579-aeeb-2133746dda24.png)
+
+
 ## Resource Utilization
 
 ### App Startup
