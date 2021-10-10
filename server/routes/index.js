@@ -18,15 +18,18 @@ function generateToken(user) {
 router.post('/login', async (req, res, next) => {
   const { username, password } = req.body;
 
+  console.log("Login input", username, password);
+
   const user = await User.findOne({ username });
 
   if (user) {
     const match = await bcrypt.compare(password, user.passwordHash);
 
     if (match) {
+      console.log("User Logged in")
       res.json({ token: generateToken({ id: user._id, username: user.username }) });
-
     } else {
+      console.log("Password not matching")
       res.json({ error: 'Password does not match' });
     }
     return;
@@ -40,6 +43,7 @@ router.post('/login', async (req, res, next) => {
     });
 
     newUser = await newUser.save();
+    console.log("Login Success");
     res.json({ token: generateToken({ id: newUser._id, username: newUser.username }) });
   }
 });
@@ -53,10 +57,12 @@ router.post('/save', async function (req, res, next) {
       jwt.verify(token, process.env.JWT_SECRET);
 
     } catch {
+      console.log("Token is invalid: ", token);
       res.json({ error: "Token is invalid" });
       return;
     }
   } else {
+    console.log("No token: ", token);
     res.json({ error: "No token" });
     return;
   }
@@ -105,11 +111,12 @@ router.post('/save', async function (req, res, next) {
 
   });
 
+  console.log("Save success", username, token);
   res.json({ success: true });
 });
 
 // Send notes to the client
-router.get('/load', async function (req, res, next) {
+router.post('/load', async function (req, res, next) {
   const { token } = req.body;
 
   let user;
@@ -118,10 +125,12 @@ router.get('/load', async function (req, res, next) {
       user = jwt.verify(token, process.env.JWT_SECRET);
 
     } catch {
+      console.log("Token is invalid: ", token);
       res.json({ error: "Token is invalid" });
       return;
     }
   } else {
+    console.log("No token: ", token);
     res.json({ error: "No token" });
     return;
   }
@@ -136,11 +145,12 @@ router.get('/load', async function (req, res, next) {
       appId: notesFromDB[i].appId,
       title: notesFromDB[i].title,
       body: notesFromDB[i].body,
-      image: image.image,
+      image: image ? image.image : null,
       location: notesFromDB[i].location
     });
   }
 
+  console.log("Load success", token, resNotes);
   res.json(resNotes);
 });
 
