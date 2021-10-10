@@ -9,7 +9,7 @@ android {
     compileSdk 30
 
     defaultConfig {
-        applicationId "com.timothygoon.note_taking_app"
+        applicationId "com.gropu50.note_taking_app"
         minSdk 21
         targetSdk 30
         versionCode 1

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.timothygoon.note_taking_app">
+    package="com.group50.note_taking_app">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
@@ -12,7 +12,7 @@
         android:required="false"/>
 
     <application
-        android:name=".NoteTakingApplication"
+        android:name="com.group50.note_taking_app.NoteTakingApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -21,7 +21,7 @@
         android:theme="@style/Theme.NoteTakingApp">
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.timothygoon.note_taking_app.fileprovider"
+            android:authorities="com.group50.note_taking_app.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
@@ -29,7 +29,7 @@
                 android:resource="@xml/files"/>
         </provider>
         <activity
-            android:name=".MainActivity"
+            android:name="com.group50.note_taking_app.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
